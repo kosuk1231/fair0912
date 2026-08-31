@@ -7,23 +7,41 @@
 
 ```
 참여자(QR → 모바일)
-   │  사진 제출
+   │  브라우저에서 1600px·JPEG로 압축 후 전송
    ▼
 Vercel (Next.js /api/submit)
-   ├─ ① Supabase Storage  ← 사진 원본 (동시 제출 안전)
-   ├─ ② Supabase DB       ← 제출 기록 (submissions 테이블)
-   ├─ ③ Google Drive      ← 사진 자동 복사 (미러)
-   └─ ④ Google Sheets     ← 제출 목록 자동 행 추가 (미러)
+   ├─ ① Google Drive   ← 사진 원본 (주 저장소, 협회 계정 용량)
+   ├─ ② Supabase Storage ← 드라이브 실패 시에만 대피
+   ├─ ③ Supabase DB    ← 제출 기록 텍스트 행만
+   └─ ④ Google Sheets  ← 제출 목록 자동 행 추가
 ```
 
-- Supabase가 **원본(source of truth)** — 시트/드라이브가 순간 장애여도 제출은 유실되지 않습니다.
-- 시트 `append`는 동시 호출에 안전해 여러 명이 동시에 제출해도 행이 겹치지 않습니다.
+**왜 드라이브가 주 저장소인가**
+
+Supabase 무료 플랜은 파일 저장소 1GB, 대역폭 10GB가 상한입니다. 등반대회 1,200명이
+장당 300KB로 3장씩 올리면 최대 1.08GB로 한도를 넘깁니다. 갤러리를 현장 스크린에
+띄우면 대역폭도 빠르게 소모되고요. 한도 초과 시 유예기간 뒤 업로드가 차단되므로
+행사 당일 위험합니다.
+
+그래서 사진은 협회 구글 계정 용량을 쓰는 드라이브에 저장하고, 갤러리도
+`drive.google.com/thumbnail` 로 드라이브가 직접 서빙합니다. Supabase는 텍스트 행만
+담아 500MB DB 한도에 사실상 닿지 않습니다.
+
+드라이브 업로드가 실패하면 그때만 Supabase Storage로 대피시켜 사진 유실을 막고,
+시트에 `(드라이브 실패 — Supabase 임시 보관)` 으로 표시합니다.
+
+### 프로젝트 자동 정지 방지
+
+무료 플랜은 7일간 요청이 없으면 프로젝트가 정지됩니다. `vercel.json` 에 매일 03:00
+`/api/ping` 을 호출하는 크론을 넣어 깨어 있게 유지합니다. 행사 전날 한 번
+`/api/health` 로 확인해 두면 확실합니다.
 
 ## 1. Supabase 설정 (5분)
 
 1. [supabase.com](https://supabase.com) 새 프로젝트 생성
 2. **SQL Editor**에서 `supabase/schema.sql` 실행
 3. **Storage → New bucket** → 이름 `issueon-photos`, **Public bucket 체크**
+   (드라이브 실패 시 대피용이라 평소에는 비어 있습니다)
 4. **Settings → API**에서 `Project URL`, `service_role` 키 복사
 
 ## 환경변수 (Vercel)
@@ -98,6 +116,36 @@ gh repo create issueon-2026 --private --push --source=.
 Vercel에서 리포 Import → **Environment Variables**에 `.env.example`의 6개 값 입력 → Deploy.
 
 > `GOOGLE_PRIVATE_KEY`는 JSON 키 파일의 `private_key` 값을 줄바꿈 포함 그대로(또는 `\n` 형태로) 붙여넣으면 됩니다.
+
+## 문제가 생기면 — /api/health
+
+배포 URL 뒤에 `/api/health` 를 붙여 브라우저로 열면 모든 연결을 실제로 시도해 보고
+어디가 막혔는지 JSON으로 알려줍니다.
+
+```
+https://<배포주소>/api/health
+```
+
+| 항목 | 확인 내용 |
+|---|---|
+| `env` | 환경변수 4개가 들어와 있는지 |
+| `table` | `submissions` 테이블 존재·권한 |
+| `bucket` | `issueon-photos` 버킷 존재·public 여부 |
+| `storageWrite` | 실제 업로드 가능 여부 |
+| `sheet` | 시트에 행 추가 가능 여부 |
+| `drive` | 드라이브 업로드 가능 여부 |
+
+시트에 `[점검]` 행, 드라이브에 `_점검_*.txt` 가 남으니 확인 후 지우세요.
+
+### 자주 나오는 실패
+
+| 증상 | 원인 | 조치 |
+|---|---|---|
+| `Bucket not found` | 버킷 미생성 | Storage에서 `issueon-photos` 생성 (Public) |
+| `relation ... does not exist` | 테이블 미생성 | `supabase/schema.sql` 실행 |
+| `Request Entity Too Large` | 요청 4.5MB 초과 | 사진 자동 압축이 적용됐는지 확인 |
+| `storageQuotaExceeded` | 서비스 계정 용량 없음 | 드라이브 폴더를 공유 드라이브로 이동 |
+| 환경변수 누락 | Vercel 저장 후 재배포 안 함 | 저장 뒤 **Redeploy** 필요 |
 
 ## 4. QR코드
 
