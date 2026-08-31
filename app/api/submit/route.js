@@ -63,6 +63,7 @@ export async function POST(req) {
     const driveLinks = [];  // 시트 기록용
     let driveFailed = 0;
     let driveError = null;
+    let sheetError = '기록되지 않음';
 
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
@@ -106,11 +107,13 @@ export async function POST(req) {
         submittedAt, name, org, phone, snsUrl,
         photoUrls.join('\n'), driveLinks.join('\n'),
       ]);
+      sheetError = null;
     } catch (e) {
       console.error('[sheet]', e.message);
+      sheetError = e.message;
     }
 
-    return NextResponse.json({ ok: true, driveFailed, driveError });
+    return NextResponse.json({ ok: true, driveFailed, driveError, sheetError });
   } catch (e) {
     console.error('[submit]', e);
     const m = e.message || '';
