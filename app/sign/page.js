@@ -2,10 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const DISTRICTS = [
+const SEOUL_DISTRICTS = [
   '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
   '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
   '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구',
+];
+
+const OTHER_REGIONS = [
+  '경기도', '인천광역시', '강원특별자치도', '충청북도', '충청남도', '대전광역시',
+  '세종특별자치시', '전북특별자치도', '전라남도', '광주광역시', '경상북도',
+  '대구광역시', '경상남도', '부산광역시', '울산광역시', '제주특별자치도', '해외',
 ];
 
 function SignaturePad({ onChange }) {
@@ -170,7 +176,7 @@ export default function Sign() {
       <section className="submit-sec">
         <div className="wrap">
           <h2 className="sec-title">서명 <span className="t">참여하기</span></h2>
-          <p className="sec-lead">서울시민이라면 누구나 참여할 수 있습니다. 한 분당 한 번입니다.</p>
+          <p className="sec-lead">누구나 참여할 수 있습니다. 한 분당 한 번입니다.</p>
 
           {done ? (
             <div className="form-card done">
@@ -191,13 +197,24 @@ export default function Sign() {
               </div>
 
               <div className="field">
-                <label htmlFor="district">거주 자치구</label>
+                <label htmlFor="district">거주 지역</label>
                 <select id="district" name="district" required defaultValue="">
                   <option value="" disabled>선택해 주세요</option>
-                  {DISTRICTS.map((d) => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
+                  <optgroup label="서울특별시">
+                    {SEOUL_DISTRICTS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </optgroup>
+                  <optgroup label="그 외 지역">
+                    {OTHER_REGIONS.map((d) => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </optgroup>
                 </select>
+                <p className="field-note">
+                  서울시의회에 전달되는 서명이라 서울 거주자는 자치구까지 선택해 주세요.
+                  서울 외 지역에서도 참여하실 수 있습니다.
+                </p>
               </div>
 
               <div className="field">
@@ -233,9 +250,9 @@ export default function Sign() {
                   </span>
                 </label>
                 <div className="consent-detail">
-                  <p><b>수집 항목</b> 성명, 거주 자치구, 연락처, 소속(선택), 자필 서명</p>
+                  <p><b>수집 항목</b> 성명, 거주 지역, 연락처, 소속(선택), 자필 서명</p>
                   <p><b>이용 목적</b> 서명 진위 확인, 중복 서명 방지, 서울시의회 제출용 서명부 작성</p>
-                  <p><b>제3자 제공</b> 서울특별시의회 (성명·거주 자치구·자필 서명 / 청원·정책건의 자료)</p>
+                  <p><b>제3자 제공</b> 서울특별시의회 (성명·거주 지역·자필 서명 / 청원·정책건의 자료)</p>
                   <p><b>보유 기간</b> 서명부 제출 및 관련 활동 종료 후 1년까지 (이후 지체 없이 파기)</p>
                   <p>
                     수집된 개인정보는 위 목적 외로 사용되지 않으며, 자필 서명 이미지는 외부에

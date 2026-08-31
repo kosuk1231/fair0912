@@ -265,6 +265,12 @@ section { padding: 52px 0; }
 }
 .admin-tabs button.on { background: var(--teal); border-color: var(--teal); color: #fff; }
 
+.tally-head {
+  margin-top: 26px; font-size: 16px; font-weight: 900; color: var(--navy);
+  display: flex; align-items: baseline; gap: 8px;
+}
+.tally-head span { font-size: 14px; font-weight: 700; color: var(--orange); }
+
 .district-grid {
   margin-top: 20px; display: grid; gap: 8px;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
@@ -274,6 +280,8 @@ section { padding: 52px 0; }
   padding: 12px 8px; text-align: center;
 }
 .district b { display: block; font-size: 22px; font-weight: 900; color: var(--orange); letter-spacing: -0.03em; }
+.district.other { background: var(--teal-tint); }
+.district.other b { color: var(--teal-deep); }
 .district span { font-size: 12.5px; color: #52707c; font-weight: 700; }
 
 .admin-row {
@@ -303,6 +311,8 @@ section { padding: 52px 0; }
   background-repeat: no-repeat; background-position: right 16px center;
 }
 .field select:focus { outline: 2px solid var(--teal); border-color: var(--teal); }
+.field optgroup { font-weight: 800; color: var(--teal-deep); }
+.field-note { margin-top: 8px; font-size: 12.5px; line-height: 1.55; color: #7b93a0; }
 
 /* 서명 현황 */
 .sign-status {

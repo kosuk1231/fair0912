@@ -48,9 +48,11 @@ export default function Admin() {
 
   function exportCsv() {
     if (!sigs) return;
-    const head = ['연번', '성명', '자치구', '연락처', '소속', '서명일시', '서명이미지'];
+    const seoulSet = new Set(Object.keys(sigs.seoul));
+    const head = ['연번', '성명', '구분', '거주지역', '연락처', '소속', '서명일시', '서명이미지'];
     const lines = sigs.rows.map((r, i) => [
-      i + 1, r.name, r.district, r.phone, r.org || '',
+      i + 1, r.name, seoulSet.has(r.district) ? '서울' : '그 외',
+      r.district, r.phone, r.org || '',
       new Date(r.created_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
       r.drive_link || '',
     ]);
@@ -162,14 +164,19 @@ export default function Admin() {
               ) : (
                 <>
                   <p className="sec-lead">
-                    총 <b>{sigs.total.toLocaleString()}</b>명. 자치구별 집계는 시의회 지역구 설득
+                    총 <b>{sigs.total.toLocaleString()}</b>명 (서울 {sigs.seoulTotal.toLocaleString()}명 ·
+                    그 외 {sigs.otherTotal.toLocaleString()}명). 자치구별 집계는 시의회 지역구 설득
                     자료로 바로 쓸 수 있습니다.
                   </p>
                   <button type="button" className="btn btn-primary" style={{ marginTop: 14 }} onClick={exportCsv}>
                     서명부 내려받기 (CSV)
                   </button>
+
+                  <h3 className="tally-head">
+                    서울특별시 <span>{sigs.seoulTotal.toLocaleString()}명</span>
+                  </h3>
                   <div className="district-grid">
-                    {Object.entries(sigs.byDistrict)
+                    {Object.entries(sigs.seoul)
                       .sort((a, b) => b[1] - a[1])
                       .map(([d, n]) => (
                         <div className="district" key={d}>
@@ -178,6 +185,25 @@ export default function Admin() {
                         </div>
                       ))}
                   </div>
+                  {sigs.seoulTotal === 0 && <p className="empty">서울 지역 서명이 없습니다.</p>}
+
+                  {sigs.otherTotal > 0 && (
+                    <>
+                      <h3 className="tally-head">
+                        그 외 지역 <span>{sigs.otherTotal.toLocaleString()}명</span>
+                      </h3>
+                      <div className="district-grid">
+                        {Object.entries(sigs.other)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([d, n]) => (
+                            <div className="district other" key={d}>
+                              <b>{n}</b>
+                              <span>{d}</span>
+                            </div>
+                          ))}
+                      </div>
+                    </>
+                  )}
                   {sigs.total === 0 && <p className="empty">아직 서명이 없습니다.</p>}
                 </>
               )}

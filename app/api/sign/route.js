@@ -6,11 +6,20 @@ import { appendToSignSheet, uploadSignatureToDrive } from '@/lib/google';
 export const runtime = 'nodejs';
 export const revalidate = 0;
 
-export const DISTRICTS = [
+export const SEOUL_DISTRICTS = [
   '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구',
   '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구',
   '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구',
 ];
+
+/* 서울 외 지역 — 시·도 단위로 받는다 */
+export const OTHER_REGIONS = [
+  '경기도', '인천광역시', '강원특별자치도', '충청북도', '충청남도', '대전광역시',
+  '세종특별자치시', '전북특별자치도', '전라남도', '광주광역시', '경상북도',
+  '대구광역시', '경상남도', '부산광역시', '울산광역시', '제주특별자치도', '해외',
+];
+
+export const DISTRICTS = [...SEOUL_DISTRICTS, ...OTHER_REGIONS];
 
 function kstNow() {
   return new Intl.DateTimeFormat('ko-KR', {
@@ -55,7 +64,7 @@ export async function POST(req) {
       return NextResponse.json({ ok: false, error: '성명을 정확히 입력해 주세요.' }, { status: 400 });
     }
     if (!DISTRICTS.includes(district)) {
-      return NextResponse.json({ ok: false, error: '거주 자치구를 선택해 주세요.' }, { status: 400 });
+      return NextResponse.json({ ok: false, error: '거주 지역을 선택해 주세요.' }, { status: 400 });
     }
     if (phone.length < 10 || phone.length > 11) {
       return NextResponse.json({ ok: false, error: '연락처를 정확히 입력해 주세요.' }, { status: 400 });

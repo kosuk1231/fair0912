@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { SEOUL_DISTRICTS } from '@/app/api/sign/route';
 
 export const runtime = 'nodejs';
 export const revalidate = 0;
@@ -30,10 +31,23 @@ export async function GET(req) {
       .limit(20000);
     if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
 
-    const byDistrict = {};
-    for (const r of data) byDistrict[r.district] = (byDistrict[r.district] || 0) + 1;
+    const seoul = {};
+    const other = {};
+    for (const r of data) {
+      const bucket = SEOUL_DISTRICTS.includes(r.district) ? seoul : other;
+      bucket[r.district] = (bucket[r.district] || 0) + 1;
+    }
+    const seoulTotal = Object.values(seoul).reduce((a, b) => a + b, 0);
 
-    return NextResponse.json({ ok: true, rows: data, byDistrict, total: data.length });
+    return NextResponse.json({
+      ok: true,
+      rows: data,
+      seoul,
+      other,
+      seoulTotal,
+      otherTotal: data.length - seoulTotal,
+      total: data.length,
+    });
   }
 
   const { data, error } = await sb
