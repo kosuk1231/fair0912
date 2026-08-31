@@ -29,6 +29,11 @@ export async function GET() {
       정규화후줄수: fixed ? fixed.trim().split('\n').length : 0,
       정규화성공: !!fixed && fixed.includes('BEGIN PRIVATE KEY'),
     };
+    if (raw.length < 1000) {
+      checks.privateKeyShape.진단 =
+        '키가 너무 짧습니다. 예시 문구나 잘린 값이 저장된 것으로 보입니다. ' +
+        '서비스 계정 JSON의 private_key 값(1,700자 안팎) 전체를 다시 넣으세요.';
+    }
   }
 
   try {
@@ -89,7 +94,9 @@ export async function GET() {
       mimeType: 'text/plain',
       buffer: Buffer.from('health'),
     });
-    checks.drive = `ok (${f.webViewLink} — 지우세요)`;
+    checks.drive = f.shareError
+      ? `업로드는 되지만 공개 권한 실패: ${f.shareError} → 갤러리에 사진이 안 보입니다. 공유 드라이브 설정에서 '링크가 있는 모든 사용자' 공유를 허용하세요.`
+      : `ok (${f.webViewLink} — 지우세요)`;
   } catch (e) {
     checks.drive = /storageQuota/i.test(e.message)
       ? '실패: 서비스 계정 용량 문제 — 폴더를 공유 드라이브로 옮기세요.'

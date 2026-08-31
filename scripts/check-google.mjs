@@ -8,7 +8,7 @@ import { Readable } from 'stream';
 
 const SHEET_ID = process.env.SHEET_ID || '1mVZfJWcm5kfNxeAwqGoYp24Ok0Q9skZM3qxJL8p-pSw';
 const SHEET_TAB = process.env.SHEET_TAB || '제출목록';
-const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '1U8Da_CIJcLsFFmiaa66nIkCHyU3G1tdA';
+const DRIVE_FOLDER_ID = process.env.DRIVE_FOLDER_ID || '0AOMa5m2h1GJuUk9PVA';
 
 const auth = new google.auth.JWT({
   email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,

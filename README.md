@@ -50,7 +50,7 @@ Supabase 무료 플랜은 파일 저장소 1GB, 대역폭 10GB가 상한입니�
 |---|---|---|
 | `SUPABASE_URL` | Config | `https://xxxx.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | service_role 키 |
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Config | `kosuk1231@clim-503123.iam.gserviceaccount.com` |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Config | `issueon@issueon.iam.gserviceaccount.com` |
 | `GOOGLE_PRIVATE_KEY` | **Secret** | `-----BEGIN PRIVATE KEY-----\n…` |
 | `SHEET_ID` | Config | 생략 가능 (코드 기본값 있음) |
 | `SHEET_TAB` | Config | 생략 가능 |
@@ -70,12 +70,17 @@ Supabase 무료 플랜은 파일 저장소 1GB, 대역폭 10GB가 상한입니�
 | 항목 | ID |
 |---|---|
 | 스프레드시트 | `1mVZfJWcm5kfNxeAwqGoYp24Ok0Q9skZM3qxJL8p-pSw` |
-| 드라이브 폴더 | `1U8Da_CIJcLsFFmiaa66nIkCHyU3G1tdA` |
-| 서비스 계정 | `kosuk1231@clim-503123.iam.gserviceaccount.com` |
+| 드라이브 (공유 드라이브 루트) | `0AOMa5m2h1GJuUk9PVA` |
+| 서비스 계정 | `issueon@issueon.iam.gserviceaccount.com` |
 
 **해야 할 일은 하나뿐입니다**
 
-> 위 시트와 드라이브 폴더를 **서비스 계정 이메일에 '편집자'로 공유**
+> 시트는 서비스 계정 이메일에 **편집자**로 공유하고,
+> 사진은 **공유 드라이브**에 저장합니다(서비스 계정을 **콘텐츠 관리자**로 멤버 추가).
+>
+> 서비스 계정은 자체 저장 용량이 없어 개인 '내 드라이브' 폴더에는 파일을 만들 수
+> 없습니다(`Service Accounts do not have storage quota`). 공유 드라이브는 파일 소유자가
+> 조직이라 이 제약을 받지 않습니다.
 
 탭과 헤더는 손으로 만들 필요 없습니다. 첫 제출이 들어오는 순간 `lib/google.js`의
 `ensureSheet()`가 `제출목록` 탭이 없으면 만들고, 헤더 행을 채운 뒤 서식까지 잡습니다.
@@ -99,7 +104,7 @@ API를 더 부르지 않습니다.
 
 ```bash
 npm install
-export GOOGLE_SERVICE_ACCOUNT_EMAIL="kosuk1231@clim-503123.iam.gserviceaccount.com"
+export GOOGLE_SERVICE_ACCOUNT_EMAIL="issueon@issueon.iam.gserviceaccount.com"
 export GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
 node scripts/check-google.mjs
 ```
