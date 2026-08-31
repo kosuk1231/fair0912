@@ -313,4 +313,12 @@ footer {
   padding: 34px 0 44px; font-size: 13.5px; line-height: 1.8;
 }
 footer b { color: #fff; font-size: 14.5px; }
-footer .tags { margin-top: 10px; color: #7fd4cf; font-weight: 700; }
+footer .tags {
+  margin-top: 14px; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 7px;
+}
+footer .tags li {
+  font-size: 12.5px; font-weight: 700; color: #7fd4cf;
+  border: 1px solid rgba(127, 212, 207, 0.35); border-radius: 999px;
+  padding: 5px 12px; background: rgba(127, 212, 207, 0.08);
+}
