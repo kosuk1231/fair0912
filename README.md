@@ -53,6 +53,9 @@ Supabase 무료 플랜은 파일 저장소 1GB, 대역폭 10GB가 상한입니�
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Config | `issueon@issueon.iam.gserviceaccount.com` |
 | `GOOGLE_PRIVATE_KEY` | **Secret** | `-----BEGIN PRIVATE KEY-----\n…` |
 | `ADMIN_KEY` | **Secret** | 관리 페이지(/admin) 접근 키 — 원하는 문자열 |
+| `SIGN_GOAL` | Config | 서명 목표 인원 (기본 3000) |
+| `SIGN_SHEET_ID` | Config | **서명부 전용 스프레드시트 ID** |
+| `SIGN_DRIVE_FOLDER_ID` | Config | **서명 이미지 전용 드라이브 폴더 ID** |
 | `SHEET_ID` | Config | 생략 가능 (코드 기본값 있음) |
 | `SHEET_TAB` | Config | 생략 가능 |
 | `DRIVE_FOLDER_ID` | Config | 생략 가능 |
@@ -122,6 +125,37 @@ gh repo create issueon-2026 --private --push --source=.
 Vercel에서 리포 Import → **Environment Variables**에 `.env.example`의 6개 값 입력 → Deploy.
 
 > `GOOGLE_PRIVATE_KEY`는 JSON 키 파일의 `private_key` 값을 줄바꿈 포함 그대로(또는 `\n` 형태로) 붙여넣으면 됩니다.
+
+## 서명운동 — /sign
+
+서울시의회 전달용 서명을 받습니다. 사진 제출과 **데이터가 완전히 분리**됩니다.
+
+| | 사진 제출 | 서명 |
+|---|---|---|
+| 테이블 | `submissions` | `signatures` |
+| 스프레드시트 | `SHEET_ID` | **`SIGN_SHEET_ID` (별도 문서)** |
+| 드라이브 폴더 | `DRIVE_FOLDER_ID` | **`SIGN_DRIVE_FOLDER_ID` (별도 폴더)** |
+| 공개 여부 | 갤러리에 공개 | **전부 비공개** (총 인원수만 노출) |
+
+Supabase 프로젝트는 하나를 쓰지만(테이블로 분리), **스프레드시트와 드라이브는 문서·폴더
+자체를 나눕니다.** 사진 제출 목록은 실무자 여러 명이 열어볼 수 있어야 하는 반면,
+서명부에는 시민 연락처가 담기므로 공유 범위를 따로 통제해야 하기 때문입니다.
+
+`SIGN_SHEET_ID` / `SIGN_DRIVE_FOLDER_ID` 를 설정하지 않으면 사진 쪽과 같은 곳에
+기록되며, `/api/health` 의 `저장소` 항목이 경고를 띄웁니다.
+
+- **수집 항목** 성명 · 거주 자치구 · 연락처 · 소속(선택) · 자필 서명
+- **자치구 필수** 시의회는 지역구 단위로 움직이므로, 관리 페이지에서 자치구별 집계를
+  바로 확인할 수 있습니다. 총계보다 훨씬 강한 설득 자료입니다.
+- **중복 차단** 연락처를 SHA-256 해시로 저장해 같은 번호의 재서명을 막습니다
+  (`phone_hash` 컬럼에 unique 제약).
+- **자필 서명 이미지** 드라이브에 저장하되 **공개 권한을 주지 않습니다**(`share: false`).
+  개인정보이므로 갤러리·API 어디에도 노출되지 않습니다.
+- **서명부 출력** `/admin` → 서명부 탭 → `서명부 내려받기 (CSV)`.
+  자치구 → 서명일시 순으로 정렬돼 연번이 붙습니다. 엑셀에서 열어 그대로 제출 문서로
+  가공하면 됩니다(UTF-8 BOM 포함).
+
+준비: Supabase SQL Editor에서 `supabase/schema.sql` 의 서명운동 블록 실행.
 
 ## 갤러리 관리 — /admin
 
