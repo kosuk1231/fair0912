@@ -257,6 +257,25 @@ section { padding: 52px 0; }
 .consent-detail b { color: var(--navy); margin-right: 6px; }
 
 /* 관리 페이지 */
+.admin-tabs { display: flex; gap: 8px; padding-top: 8px; }
+.admin-tabs button {
+  font-family: inherit; font-size: 14.5px; font-weight: 800; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 999px; background: #fff;
+  color: #7b93a0; padding: 9px 18px;
+}
+.admin-tabs button.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+.district-grid {
+  margin-top: 20px; display: grid; gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+}
+.district {
+  background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 12px 8px; text-align: center;
+}
+.district b { display: block; font-size: 22px; font-weight: 900; color: var(--orange); letter-spacing: -0.03em; }
+.district span { font-size: 12.5px; color: #52707c; font-weight: 700; }
+
 .admin-row {
   display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
   background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius);
@@ -273,6 +292,67 @@ section { padding: 52px 0; }
 .admin-row .meta span { font-size: 12.5px; color: #7b93a0; }
 .admin-row .meta a { font-size: 12.5px; color: var(--teal-deep); font-weight: 700; }
 .admin-row .btn { padding: 10px 16px; font-size: 14px; }
+
+/* select */
+.field select {
+  width: 100%; font-family: inherit; font-size: 16px;
+  border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 13px 14px; background: var(--paper); color: var(--ink);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230e6e6e' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 16px center;
+}
+.field select:focus { outline: 2px solid var(--teal); border-color: var(--teal); }
+
+/* 서명 현황 */
+.sign-status {
+  margin-top: 24px; padding: 20px 18px;
+  background: #fff; border: 2px solid var(--teal); border-radius: var(--radius);
+}
+.sign-num { font-size: 15px; color: #52707c; font-weight: 600; }
+.sign-num b {
+  font-size: clamp(34px, 9vw, 44px); font-weight: 900; color: var(--orange);
+  letter-spacing: -0.04em; margin-right: 4px;
+}
+.sign-bar {
+  margin-top: 12px; height: 10px; border-radius: 999px;
+  background: var(--teal-tint); overflow: hidden;
+}
+.sign-bar i {
+  display: block; height: 100%; border-radius: 999px;
+  background: var(--teal); transition: width 0.6s ease;
+}
+.sign-goal { margin-top: 8px; font-size: 13px; color: #7b93a0; font-weight: 700; }
+
+/* 자필 서명란 */
+.sigpad { position: relative; }
+.sigpad canvas {
+  width: 100%; height: 190px; display: block;
+  border: 2px dashed var(--line); border-radius: 12px;
+  background: #fff; cursor: crosshair;
+}
+.sigpad-hint {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 14.5px; color: #9db2bf; pointer-events: none;
+}
+.sigpad-clear {
+  position: absolute; top: 10px; right: 10px;
+  border: 1.5px solid var(--line); border-radius: 8px; background: #fff;
+  font-family: inherit; font-size: 12.5px; font-weight: 700; color: var(--teal-deep);
+  padding: 6px 12px; cursor: pointer;
+}
+.sigpad-clear:hover { border-color: var(--teal); }
+
+/* 서명 배너 (사진 제출 페이지에서 유도) */
+.sign-cta {
+  margin-top: 22px; padding: 18px;
+  background: var(--navy); border-radius: var(--radius);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px;
+}
+.sign-cta .txt { flex: 1; min-width: 180px; }
+.sign-cta b { display: block; font-size: 16.5px; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+.sign-cta span { display: block; margin-top: 4px; font-size: 13.5px; color: #b9cad4; }
+.sign-cta .btn { padding: 13px 20px; font-size: 15px; }
 
 .form-msg { margin-top: 14px; font-size: 14.5px; font-weight: 700; }
 .form-msg.err { color: #c9401a; }

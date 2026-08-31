@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { appendToSheet, uploadToDrive, normalizePrivateKey } from '@/lib/google';
+import {
+  appendToSheet, uploadToDrive, normalizePrivateKey,
+  appendToSignSheet, uploadSignatureToDrive, storageTargets,
+} from '@/lib/google';
 
 export const runtime = 'nodejs';
 export const revalidate = 0;
@@ -81,6 +84,21 @@ export async function GET() {
     checks.supabase = `실패: ${e.message}`;
   }
 
+  checks.저장소 = storageTargets();
+  if (!checks.저장소.분리됨.시트) {
+    checks.저장소.경고_시트 = 'SIGN_SHEET_ID 미설정 — 서명부가 사진 시트와 같은 문서에 기록됩니다.';
+  }
+  if (!checks.저장소.분리됨.드라이브) {
+    checks.저장소.경고_드라이브 = 'SIGN_DRIVE_FOLDER_ID 미설정 — 서명 이미지가 사진과 같은 폴더에 저장됩니다.';
+  }
+
+  try {
+    const { data, error } = await supabaseAdmin().from('signatures').select('id').limit(1);
+    checks.signaturesTable = error ? `실패: ${error.message}` : 'ok';
+  } catch (e) {
+    checks.signaturesTable = `실패: ${e.message}`;
+  }
+
   try {
     await appendToSheet(['[점검]', '자동점검', '삭제해도 됨', '', '', '', '']);
     checks.sheet = 'ok (시트에 [점검] 행이 추가됐습니다 — 지우세요)';
@@ -100,6 +118,25 @@ export async function GET() {
   } catch (e) {
     checks.drive = /storageQuota/i.test(e.message)
       ? '실패: 서비스 계정 용량 문제 — 폴더를 공유 드라이브로 옮기세요.'
+      : `실패: ${e.message}`;
+  }
+
+  try {
+    await appendToSignSheet(['[점검]', '자동점검', '중구', '', '삭제해도 됨', '']);
+    checks.signSheet = 'ok (서명부에 [점검] 행이 추가됐습니다 — 지우세요)';
+  } catch (e) {
+    checks.signSheet = `실패: ${e.message}`;
+  }
+
+  try {
+    const f = await uploadSignatureToDrive({
+      name: `_서명점검_${Date.now()}.png`,
+      buffer: Buffer.from('health'),
+    });
+    checks.signDrive = `ok (${f.webViewLink} — 지우세요)`;
+  } catch (e) {
+    checks.signDrive = /storageQuota/i.test(e.message)
+      ? '실패: 서비스 계정 용량 문제 — 폴더를 공유 드라이브 안에 두세요.'
       : `실패: ${e.message}`;
   }
 

@@ -6,6 +6,8 @@ export default function Admin() {
   const [key, setKey] = useState('');
   const [entered, setEntered] = useState(false);
   const [rows, setRows] = useState(null);
+  const [tab, setTab] = useState('photos');
+  const [sigs, setSigs] = useState(null);
   const [err, setErr] = useState('');
 
   async function load(k) {
@@ -29,6 +31,38 @@ export default function Admin() {
       load(saved);
     }
   }, []);
+
+  async function loadSigs() {
+    setErr('');
+    const res = await fetch('/api/admin?kind=signatures', {
+      headers: { 'x-admin-key': key },
+      cache: 'no-store',
+    });
+    const json = await res.json();
+    if (!json.ok) {
+      setErr(json.error || '서명 목록을 불러오지 못했어요.');
+      return;
+    }
+    setSigs(json);
+  }
+
+  function exportCsv() {
+    if (!sigs) return;
+    const head = ['연번', '성명', '자치구', '연락처', '소속', '서명일시', '서명이미지'];
+    const lines = sigs.rows.map((r, i) => [
+      i + 1, r.name, r.district, r.phone, r.org || '',
+      new Date(r.created_at).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }),
+      r.drive_link || '',
+    ]);
+    const esc = (v) => `"${String(v).replace(/"/g, '""')}"`;
+    const csv = '\uFEFF' + [head, ...lines].map((r) => r.map(esc).join(',')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `이슈온_서명부_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   async function toggle(row) {
     const res = await fetch('/api/admin', {
@@ -96,11 +130,64 @@ export default function Admin() {
       </div>
       <section>
         <div className="wrap">
-          <h2 className="sec-title">제출 <span className="t">관리</span></h2>
+          <div className="admin-tabs">
+            <button
+              type="button"
+              className={tab === 'photos' ? 'on' : ''}
+              onClick={() => setTab('photos')}
+            >
+              사진 제출
+            </button>
+            <button
+              type="button"
+              className={tab === 'signatures' ? 'on' : ''}
+              onClick={() => {
+                setTab('signatures');
+                if (!sigs) loadSigs();
+              }}
+            >
+              서명부
+            </button>
+          </div>
+
+          {err && <p className="form-msg err">{err}</p>}
+
+          {tab === 'signatures' ? (
+            <>
+              <h2 className="sec-title" style={{ marginTop: 18 }}>
+                서명 <span className="t">현황</span>
+              </h2>
+              {sigs === null ? (
+                <p className="empty">불러오는 중…</p>
+              ) : (
+                <>
+                  <p className="sec-lead">
+                    총 <b>{sigs.total.toLocaleString()}</b>명. 자치구별 집계는 시의회 지역구 설득
+                    자료로 바로 쓸 수 있습니다.
+                  </p>
+                  <button type="button" className="btn btn-primary" style={{ marginTop: 14 }} onClick={exportCsv}>
+                    서명부 내려받기 (CSV)
+                  </button>
+                  <div className="district-grid">
+                    {Object.entries(sigs.byDistrict)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([d, n]) => (
+                        <div className="district" key={d}>
+                          <b>{n}</b>
+                          <span>{d}</span>
+                        </div>
+                      ))}
+                  </div>
+                  {sigs.total === 0 && <p className="empty">아직 서명이 없습니다.</p>}
+                </>
+              )}
+            </>
+          ) : (
+          <>
+          <h2 className="sec-title" style={{ marginTop: 18 }}>제출 <span className="t">관리</span></h2>
           <p className="sec-lead">
             숨김 처리한 제출은 갤러리에서 즉시 사라집니다. 시트·드라이브 원본은 그대로 남습니다.
           </p>
-          {err && <p className="form-msg err">{err}</p>}
           <div style={{ marginTop: 20, display: 'grid', gap: 12 }}>
             {rows.map((r) => (
               <div key={r.id} className="admin-row" data-hidden={r.hidden}>
@@ -131,6 +218,8 @@ export default function Admin() {
             ))}
             {rows.length === 0 && <p className="empty">아직 제출이 없습니다.</p>}
           </div>
+          </>
+          )}
         </div>
       </section>
     </>

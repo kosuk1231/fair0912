@@ -249,7 +249,8 @@ function UploadForm() {
           <br />
           여러분의 한 장이 조례시설 종사자의 처우를 바꾸는 목소리가 됩니다.
         </p>
-        <a className="btn btn-ghost" href="/gallery">참여 사진 보러 가기</a>
+        <a className="btn btn-primary" href="/sign">서명운동도 참여하기</a>
+        <a className="btn btn-ghost" href="/gallery" style={{ marginTop: 10 }}>참여 사진 보러 가기</a>
       </div>
     );
   }
@@ -353,7 +354,7 @@ export default function Page() {
       <div className="topbar">
         <div className="wrap">
           <span className="org">서울특별시사회복지사협회 공정위원회</span>
-          <a href="/gallery">참여 사진</a>
+          <a href="/sign">서명하기</a>
         </div>
       </div>
 
@@ -399,6 +400,14 @@ export default function Page() {
           <div className="cta">
             <a className="btn btn-primary" href="#submit">인증사진 제출하기</a>
             <a className="btn btn-ghost" href="#why">캠페인 알아보기</a>
+          </div>
+
+          <div className="sign-cta">
+            <div className="txt">
+              <b>서울시의회에 전달할 서명운동</b>
+              <span>사진 제출과 함께, 조례 개정을 요구하는 서명에도 참여해 주세요.</span>
+            </div>
+            <a className="btn btn-primary" href="/sign">서명 참여하기</a>
           </div>
         </div>
       </header>

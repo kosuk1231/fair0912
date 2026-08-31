@@ -19,6 +19,23 @@ export async function GET(req) {
   if (!auth) return NextResponse.json({ ok: false, error: '관리자 키가 올바르지 않습니다.' }, { status: 401 });
 
   const sb = supabaseAdmin();
+  const kind = new URL(req.url).searchParams.get('kind') || 'photos';
+
+  if (kind === 'signatures') {
+    const { data, error } = await sb
+      .from('signatures')
+      .select('id, created_at, name, district, phone, org, drive_link')
+      .order('district', { ascending: true })
+      .order('created_at', { ascending: true })
+      .limit(20000);
+    if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+
+    const byDistrict = {};
+    for (const r of data) byDistrict[r.district] = (byDistrict[r.district] || 0) + 1;
+
+    return NextResponse.json({ ok: true, rows: data, byDistrict, total: data.length });
+  }
+
   const { data, error } = await sb
     .from('submissions')
     .select('id, created_at, name, org, phone, sns_url, photo_urls, drive_links, hidden')
