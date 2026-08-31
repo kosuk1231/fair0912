@@ -114,6 +114,16 @@ section { padding: 52px 0; }
 }
 .why .motto em { font-style: normal; color: #ffd9a8; }
 
+/* 시설 목록 */
+.facilities { margin-top: 24px; }
+.fac-label { font-size: 13.5px; color: #b9cad4; margin-bottom: 10px; }
+.facilities ul { list-style: none; display: flex; flex-wrap: wrap; gap: 7px; }
+.facilities li {
+  font-size: 13px; font-weight: 700; color: #d7e6e4;
+  border: 1px solid rgba(255,255,255,0.22); border-radius: 999px;
+  padding: 5px 12px; background: rgba(255,255,255,0.05);
+}
+
 /* 참여 방법 */
 .how ol { margin-top: 24px; list-style: none; display: grid; gap: 12px; }
 .how li {
@@ -210,6 +220,39 @@ section { padding: 52px 0; }
 
 .agree { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; color: #52707c; margin: 18px 0; }
 .agree input { margin-top: 3px; accent-color: var(--teal); width: 17px; height: 17px; }
+
+.consent { margin: 18px 0 4px; }
+.consent .agree { margin: 10px 0; }
+.consent-toggle {
+  margin-left: 8px; border: none; background: none; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; font-weight: 700;
+  color: var(--teal-deep); text-decoration: underline; padding: 0;
+}
+.consent-detail {
+  margin: 4px 0 12px 26px; padding: 12px 14px;
+  background: var(--teal-tint); border-radius: 10px;
+  font-size: 12.5px; color: #40606e; line-height: 1.6;
+}
+.consent-detail p { margin: 3px 0; }
+.consent-detail b { color: var(--navy); margin-right: 6px; }
+
+/* 관리 페이지 */
+.admin-row {
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+  background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius);
+  padding: 14px;
+}
+.admin-row[data-hidden='true'] { opacity: 0.45; border-style: dashed; }
+.admin-row .thumbs { display: flex; gap: 6px; }
+.admin-row .thumbs img {
+  width: 64px; height: 64px; object-fit: cover; border-radius: 8px;
+  border: 1px solid var(--line);
+}
+.admin-row .meta { flex: 1; min-width: 160px; display: flex; flex-direction: column; gap: 2px; }
+.admin-row .meta b { font-size: 15px; color: var(--navy); }
+.admin-row .meta span { font-size: 12.5px; color: #7b93a0; }
+.admin-row .meta a { font-size: 12.5px; color: var(--teal-deep); font-weight: 700; }
+.admin-row .btn { padding: 10px 16px; font-size: 14px; }
 
 .form-msg { margin-top: 14px; font-size: 14.5px; font-weight: 700; }
 .form-msg.err { color: #c9401a; }

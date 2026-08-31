@@ -59,58 +59,57 @@ export async function POST(req) {
     const stamp = Date.now();
     const day = submittedAt.replace(/[^\d]/g, '').slice(0, 8);
 
-    const photoUrls = [];   // 갤러리 표시용
-    const driveLinks = [];  // 시트 기록용
     let driveFailed = 0;
     let driveError = null;
-    let sheetError = '기록되지 않음';
+    let sheetError = null;
 
-    for (let i = 0; i < files.length; i++) {
-      const f = files[i];
-      const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
-      const buffer = Buffer.from(await f.arrayBuffer());
-      const fileName = `${day}_${safeName(name)}_${safeName(org)}_${i + 1}.${ext}`;
+    /* ① 사진들을 병렬 처리 — 3장을 순서대로 올리면 3배 느리다.
+       각 장: 드라이브 업로드 → 실패 시에만 Supabase 대피 */
+    const results = await Promise.all(
+      files.map(async (f, i) => {
+        const ext = (f.name.split('.').pop() || 'jpg').toLowerCase();
+        const buffer = Buffer.from(await f.arrayBuffer());
+        const fileName = `${day}_${safeName(name)}_${safeName(org)}_${i + 1}.${ext}`;
 
-      // ① 1차 저장소: 구글 드라이브 (협회 계정 용량 사용)
-      try {
-        const d = await uploadToDrive({ name: fileName, mimeType: f.type, buffer });
-        photoUrls.push(d.thumbnailUrl);
-        driveLinks.push(d.webViewLink);
-        continue;
-      } catch (e) {
-        console.error('[drive]', e.message);
-        driveFailed++;
-        driveError = e.message;
-      }
+        try {
+          const d = await uploadToDrive({ name: fileName, mimeType: f.type, buffer });
+          return { url: d.thumbnailUrl, link: d.webViewLink };
+        } catch (e) {
+          console.error('[drive]', e.message);
+          driveFailed++;
+          driveError = e.message;
+        }
 
-      // ② 드라이브 실패 시에만 Supabase Storage로 대피 (사진 유실 방지)
-      const path = `${stamp}_${asciiKey(name)}_${i + 1}.${asciiKey(ext) || 'jpg'}`;
-      const { error: upErr } = await sb.storage
-        .from('issueon-photos')
-        .upload(path, buffer, { contentType: f.type, upsert: false });
-      if (upErr) throw new Error(`사진 저장 실패: ${upErr.message}`);
+        const path = `${stamp}_${asciiKey(name)}_${i + 1}.${asciiKey(ext) || 'jpg'}`;
+        const { error: upErr } = await sb.storage
+          .from('issueon-photos')
+          .upload(path, buffer, { contentType: f.type, upsert: false });
+        if (upErr) throw new Error(`사진 저장 실패: ${upErr.message}`);
 
-      const { data: pub } = sb.storage.from('issueon-photos').getPublicUrl(path);
-      photoUrls.push(pub.publicUrl);
-      driveLinks.push('(드라이브 실패 — Supabase 임시 보관)');
-    }
+        const { data: pub } = sb.storage.from('issueon-photos').getPublicUrl(path);
+        return { url: pub.publicUrl, link: '(드라이브 실패 — Supabase 임시 보관)' };
+      })
+    );
 
-    // ③ Supabase DB: 텍스트 행만 기록 (용량 부담 없음)
-    const { error: dbErr } = await sb.from('submissions').insert({
-      name, org, phone, sns_url: snsUrl, photo_urls: photoUrls, drive_links: driveLinks,
-    });
-    if (dbErr) throw new Error(`DB 저장 실패: ${dbErr.message}`);
+    const photoUrls = results.map((r) => r.url);
+    const driveLinks = results.map((r) => r.link);
 
-    // ④ 구글 시트 기록 (실패해도 제출은 유지)
-    try {
-      await appendToSheet([
+    /* ② DB 기록과 시트 기록을 동시에 실행 — 순서대로 기다릴 이유가 없다 */
+    const [dbRes, sheetRes] = await Promise.allSettled([
+      sb.from('submissions').insert({
+        name, org, phone, sns_url: snsUrl, photo_urls: photoUrls, drive_links: driveLinks,
+      }),
+      appendToSheet([
         submittedAt, name, org, phone, snsUrl,
         photoUrls.join('\n'), driveLinks.join('\n'),
-      ]);
-      sheetError = null;
-    } catch (e) {
-      console.error('[sheet]', e.message);
-      sheetError = e.message;
+      ]),
+    ]);
+
+    if (dbRes.status === 'rejected') throw new Error(`DB 저장 실패: ${dbRes.reason?.message || dbRes.reason}`);
+    if (dbRes.value?.error) throw new Error(`DB 저장 실패: ${dbRes.value.error.message}`);
+    if (sheetRes.status === 'rejected') {
+      sheetError = sheetRes.reason?.message || String(sheetRes.reason);
+      console.error('[sheet]', sheetError);
     }
 
     return NextResponse.json({ ok: true, driveFailed, driveError, sheetError });

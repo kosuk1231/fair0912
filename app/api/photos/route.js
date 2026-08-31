@@ -9,6 +9,7 @@ export async function GET() {
   const { data, error } = await sb
     .from('submissions')
     .select('id, name, org, photo_urls, created_at')
+    .eq('hidden', false)
     .order('created_at', { ascending: false })
     .limit(200);
   if (error) return NextResponse.json({ ok: false, photos: [] }, { status: 500 });

@@ -173,6 +173,7 @@ function UploadForm() {
   const [previews, setPreviews] = useState([]);
   const [sending, setSending] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [done, setDone] = useState(false);
   const [err, setErr] = useState('');
   const inputRef = useRef(null);
@@ -311,13 +312,36 @@ function UploadForm() {
         )}
       </div>
 
-      <label className="agree">
-        <input type="checkbox" required />
-        <span>
-          제출한 사진과 이름·소속은 캠페인 홍보(협회 SNS·홈페이지·정책자료)에 활용될 수 있으며, 이에
-          동의합니다.
-        </span>
-      </label>
+      <div className="consent">
+        <label className="agree">
+          <input type="checkbox" required />
+          <span>
+            <b>[필수] 개인정보 수집·이용에 동의합니다.</b>
+            <button
+              type="button"
+              className="consent-toggle"
+              onClick={() => setShowPrivacy((v) => !v)}
+            >
+              {showPrivacy ? '접기' : '자세히'}
+            </button>
+          </span>
+        </label>
+        {showPrivacy && (
+          <div className="consent-detail">
+            <p><b>수집 항목</b> 성함, 소속, 연락처(선택), SNS 게시물 링크(선택), 제출 사진</p>
+            <p><b>수집 목적</b> 캠페인 참여 확인, 이벤트 안내, 협회 홍보(SNS·홈페이지), 처우개선 정책활동 자료</p>
+            <p><b>보유 기간</b> 수집일로부터 1년 (이후 지체 없이 파기)</p>
+            <p>동의를 거부할 수 있으나, 거부 시 캠페인 참여(사진 제출)가 제한됩니다.</p>
+          </div>
+        )}
+        <label className="agree">
+          <input type="checkbox" required />
+          <span>
+            [필수] 제출한 사진과 성함·소속이 캠페인 홍보(협회 SNS·홈페이지·정책자료)에 활용되는 것에
+            동의합니다.
+          </span>
+        </label>
+      </div>
 
       <button className="btn btn-primary" style={{ width: '100%' }} disabled={sending || busy}>
         {sending ? '제출 중…' : busy ? '사진 준비 중…' : '인증사진 제출하기'}
@@ -379,9 +403,22 @@ export default function Page() {
             대우가 달라져서는 안 됩니다.
           </p>
           <div className="stats">
-            <div className="stat"><b>14개</b><span>직능 분야</span></div>
+            <div className="stat"><b>13개</b><span>직능 분야</span></div>
             <div className="stat"><b>155개</b><span>조례시설</span></div>
             <div className="stat"><b>2,365명</b><span>종사자</span></div>
+          </div>
+          <div className="facilities">
+            <p className="fac-label">서울시 조례로 운영되는 13개 직능의 시설들입니다.</p>
+            <ul>
+              {[
+                '1인가구지원센터', '50플러스센터', '교육복지센터', '뇌병변비전센터',
+                '노숙인지원주택', '발달장애인사회적응지원센터', '발달장애인평생교육센터',
+                '시립실버케어센터', '외국인주민센터', '장애인가족지원센터',
+                '장애인권익옹호기관', '장애인지원주택', '주거복지센터',
+              ].map((f) => (
+                <li key={f}>{f}</li>
+              ))}
+            </ul>
           </div>
           <p className="motto">
             우리의 요구는 하나, <em>“동일 업무, 동일 처우”</em>

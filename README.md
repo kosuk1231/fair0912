@@ -52,6 +52,7 @@ Supabase 무료 플랜은 파일 저장소 1GB, 대역폭 10GB가 상한입니�
 | `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | service_role 키 |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Config | `issueon@issueon.iam.gserviceaccount.com` |
 | `GOOGLE_PRIVATE_KEY` | **Secret** | `-----BEGIN PRIVATE KEY-----\n…` |
+| `ADMIN_KEY` | **Secret** | 관리 페이지(/admin) 접근 키 — 원하는 문자열 |
 | `SHEET_ID` | Config | 생략 가능 (코드 기본값 있음) |
 | `SHEET_TAB` | Config | 생략 가능 |
 | `DRIVE_FOLDER_ID` | Config | 생략 가능 |
@@ -121,6 +122,17 @@ gh repo create issueon-2026 --private --push --source=.
 Vercel에서 리포 Import → **Environment Variables**에 `.env.example`의 6개 값 입력 → Deploy.
 
 > `GOOGLE_PRIVATE_KEY`는 JSON 키 파일의 `private_key` 값을 줄바꿈 포함 그대로(또는 `\n` 형태로) 붙여넣으면 됩니다.
+
+## 갤러리 관리 — /admin
+
+`https://<배포주소>/admin` 에서 `ADMIN_KEY` 값을 입력하면 제출 전체(숨김 포함)가
+보입니다. `숨기기` 를 누르면 갤러리에서 즉시 사라지고, `다시 표시` 로 복구됩니다.
+시트·드라이브의 원본 기록은 건드리지 않습니다.
+
+사용 전 준비 두 가지:
+1. Supabase SQL Editor에서 실행:
+   `alter table public.submissions add column if not exists hidden boolean not null default false;`
+2. Vercel에 `ADMIN_KEY` 환경변수 추가 후 Redeploy
 
 ## 문제가 생기면 — /api/health
 
