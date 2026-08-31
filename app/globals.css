@@ -1,0 +1,253 @@
+:root {
+  --teal: #0e6e6e;
+  --teal-deep: #0a5757;
+  --teal-tint: #e9f2f1;
+  --navy: #16324a;
+  --orange: #f26a21;
+  --paper: #fafbfa;
+  --ink: #1c2b33;
+  --line: #cfe0de;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.6;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
+
+/* ── 상단 바 ─────────────────────────── */
+.topbar {
+  background: var(--teal);
+  color: #fff;
+  padding: 12px 0;
+}
+.topbar .wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.topbar .org { font-size: 13px; font-weight: 600; opacity: 0.92; }
+.topbar a {
+  color: #fff; font-size: 13px; font-weight: 700; text-decoration: none;
+  border: 1.5px solid rgba(255,255,255,0.55); border-radius: 999px; padding: 5px 14px;
+}
+.topbar a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ── 히어로 ─────────────────────────── */
+.hero { padding: 56px 0 44px; background: linear-gradient(180deg, #fff 0%, var(--paper) 100%); }
+.hero .event {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: var(--teal-deep);
+  border: 1.5px solid var(--line); border-radius: 999px; padding: 6px 14px;
+  background: #fff;
+}
+.hero .event .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
+.hero h1 {
+  margin-top: 22px;
+  font-size: clamp(44px, 12vw, 72px);
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+  color: var(--navy);
+}
+.hero h1 .on {
+  color: #fff; background: var(--orange);
+  padding: 0 0.18em; border-radius: 0.12em;
+  display: inline-block; transform: rotate(-1.5deg);
+}
+.hero .sub {
+  margin-top: 16px; font-size: 17px; font-weight: 500; color: #3c5461;
+}
+.hero .sub strong { color: var(--teal-deep); font-weight: 800; }
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.hero .cta {
+  margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap;
+}
+.btn {
+  display: inline-block; text-align: center; text-decoration: none; cursor: pointer;
+  font-family: inherit; font-size: 16.5px; font-weight: 800;
+  border-radius: 12px; padding: 15px 24px; border: none;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+.btn:active { transform: scale(0.98); }
+.btn:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.btn-primary { background: var(--orange); color: #fff; flex: 1; min-width: 200px; }
+.btn-primary:hover { background: #db5b16; }
+.btn-ghost { background: #fff; color: var(--teal-deep); border: 1.5px solid var(--line); }
+
+/* ── 섹션 공통 ───────────────────────── */
+section { padding: 52px 0; }
+.sec-title {
+  font-size: 26px; font-weight: 900; letter-spacing: -0.03em; color: var(--navy);
+  line-height: 1.3;
+}
+.sec-title .t { color: var(--teal); }
+.sec-lead { margin-top: 12px; font-size: 16px; color: #405862; }
+
+/* 왜 조례시설인가 */
+.why { background: var(--navy); color: #fff; }
+.why .sec-title { color: #fff; }
+.why .sec-title .t { color: #7fd4cf; }
+.why p.body { margin-top: 14px; font-size: 16px; line-height: 1.75; color: #cfdde6; }
+.why p.body strong { color: #fff; font-weight: 800; }
+.why .stats { margin-top: 26px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.why .stat {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14);
+  border-radius: var(--radius); padding: 16px 12px; text-align: center;
+}
+.why .stat b { display: block; font-size: clamp(22px, 6vw, 30px); font-weight: 900; color: #ffb374; letter-spacing: -0.02em; }
+.why .stat span { font-size: 13px; color: #b9cad4; }
+.why .motto {
+  margin-top: 26px; text-align: center;
+  background: var(--teal); border-radius: var(--radius);
+  padding: 16px; font-size: 18px; font-weight: 800; color: #fff;
+}
+.why .motto em { font-style: normal; color: #ffd9a8; }
+
+/* 참여 방법 */
+.how ol { margin-top: 24px; list-style: none; display: grid; gap: 12px; }
+.how li {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: #fff; border: 1.5px solid var(--line); border-radius: var(--radius);
+  padding: 18px;
+}
+.how .num {
+  flex: none; width: 34px; height: 34px; border-radius: 50%;
+  background: var(--teal); color: #fff; font-weight: 900; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.how li b { display: block; font-size: 16.5px; font-weight: 800; color: var(--navy); }
+.how li p { margin-top: 3px; font-size: 14.5px; color: #52707c; }
+
+/* 9개 메시지 — 슬라이드 */
+.voice-block {
+  margin-top: 30px; padding: 22px 18px 20px;
+  background: var(--teal-tint); border-radius: var(--radius);
+}
+.voice-heading {
+  font-size: 21px; font-weight: 900; letter-spacing: -0.03em; color: var(--navy); line-height: 1.3;
+}
+.voice-heading .t { color: var(--teal); }
+.voice-lead { margin-top: 7px; font-size: 14px; color: #52707c; }
+.voice { margin-top: 16px; }
+.voice-card {
+  background: #fff; border-top: 4px solid var(--teal);
+  border-radius: 10px; padding: 24px 20px;
+  min-height: 186px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.voice-card h3 {
+  font-size: clamp(19px, 5vw, 23px); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.38; color: var(--navy);
+}
+.voice-card h3 em { font-style: normal; color: var(--orange); }
+.voice-card h3 .t { color: var(--teal); }
+.voice-card p { margin-top: 11px; font-size: 14px; line-height: 1.6; color: #5b7280; }
+.voice-card .tags { margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--teal); }
+
+.voice-nav {
+  margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.voice-nav button {
+  width: 40px; height: 40px; flex: none; cursor: pointer;
+  border: 1.5px solid var(--line); border-radius: 50%; background: #fff;
+  color: var(--teal-deep); font-size: 17px; font-family: inherit; line-height: 1;
+}
+.voice-nav button:hover { border-color: var(--teal); background: #fff; }
+.voice-nav button:focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+.voice-nav .dots { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; }
+.voice-nav .dots i {
+  width: 7px; height: 7px; border-radius: 50%; background: #b9cfcb; cursor: pointer;
+  transition: background 0.25s, transform 0.25s;
+}
+.voice-nav .dots i.on { background: var(--orange); transform: scale(1.3); }
+.voice-count { font-size: 13px; font-weight: 700; color: #5b7280; }
+
+/* ── 제출 폼 ─────────────────────────── */
+.submit-sec .form-card {
+  margin-top: 24px; background: #fff; border: 2px solid var(--teal);
+  border-radius: var(--radius); padding: 26px 22px;
+}
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 14.5px; font-weight: 800; color: var(--navy); margin-bottom: 7px; }
+.field label .opt { font-weight: 500; color: #7b93a0; font-size: 13px; }
+.field input[type='text'],
+.field input[type='tel'],
+.field input[type='url'] {
+  width: 100%; font-family: inherit; font-size: 16px;
+  border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 13px 14px; background: var(--paper); color: var(--ink);
+}
+.field input:focus { outline: 2px solid var(--teal); border-color: var(--teal); }
+
+.dropzone {
+  border: 2px dashed var(--line); border-radius: 12px;
+  padding: 26px 16px; text-align: center; cursor: pointer;
+  background: var(--paper); transition: border-color 0.15s, background 0.15s;
+}
+.dropzone:hover, .dropzone:focus-visible { border-color: var(--teal); background: var(--teal-tint); outline: none; }
+.dropzone .icon { font-size: 28px; }
+.dropzone b { display: block; margin-top: 6px; font-size: 15.5px; color: var(--teal-deep); }
+.dropzone span { font-size: 13px; color: #7b93a0; }
+.previews { margin-top: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.previews .ph { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--line); }
+.previews .ph img { width: 100%; height: 100%; object-fit: cover; }
+.previews .ph button {
+  position: absolute; top: 5px; right: 5px; width: 24px; height: 24px;
+  border: none; border-radius: 50%; background: rgba(22,50,74,0.85); color: #fff;
+  font-size: 13px; line-height: 1; cursor: pointer;
+}
+
+.agree { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; color: #52707c; margin: 18px 0; }
+.agree input { margin-top: 3px; accent-color: var(--teal); width: 17px; height: 17px; }
+
+.form-msg { margin-top: 14px; font-size: 14.5px; font-weight: 700; }
+.form-msg.err { color: #c9401a; }
+
+/* 완료 화면 */
+.done {
+  text-align: center; padding: 36px 10px;
+}
+.done .check {
+  width: 64px; height: 64px; margin: 0 auto; border-radius: 50%;
+  background: var(--teal); color: #fff; font-size: 30px;
+  display: flex; align-items: center; justify-content: center;
+}
+.done h3 { margin-top: 18px; font-size: 22px; font-weight: 900; color: var(--navy); letter-spacing: -0.02em; }
+.done p { margin-top: 10px; font-size: 15px; color: #52707c; }
+.done .btn { margin-top: 22px; }
+
+/* ── 갤러리 ─────────────────────────── */
+.gallery-grid {
+  margin-top: 24px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+}
+@media (min-width: 560px) { .gallery-grid { grid-template-columns: repeat(3, 1fr); } }
+.gallery-grid .g {
+  border-radius: 10px; overflow: hidden; border: 1.5px solid var(--line);
+  aspect-ratio: 1; background: #fff; position: relative;
+}
+.gallery-grid .g img { width: 100%; height: 100%; object-fit: cover; }
+.gallery-grid .g .who {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(transparent, rgba(22,50,74,0.85));
+  color: #fff; font-size: 12px; font-weight: 700; padding: 16px 9px 7px;
+}
+.empty { margin-top: 30px; text-align: center; color: #7b93a0; font-size: 15px; }
+
+/* ── 푸터 ─────────────────────────── */
+footer {
+  background: var(--navy); color: #9db2bf;
+  padding: 34px 0 44px; font-size: 13.5px; line-height: 1.8;
+}
+footer b { color: #fff; font-size: 14.5px; }
+footer .tags { margin-top: 10px; color: #7fd4cf; font-weight: 700; }
