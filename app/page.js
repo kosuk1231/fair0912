@@ -87,6 +87,39 @@ const SLOGANS = [
   },
 ];
 
+/* 업로드 전 브라우저에서 리사이즈·압축.
+   Vercel 서버리스는 요청 본문 4.5MB가 상한이라 원본 그대로 보내면 거부된다. */
+const MAX_EDGE = 1600;
+const TARGET_BYTES = 900 * 1024;
+
+async function compressImage(file) {
+  if (!file.type.startsWith('image/')) return file;
+
+  const bitmap = await createImageBitmap(file).catch(() => null);
+  if (!bitmap) return file;
+
+  const scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+  const w = Math.round(bitmap.width * scale);
+  const h = Math.round(bitmap.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  bitmap.close?.();
+
+  let blob = null;
+  for (const q of [0.82, 0.7, 0.6, 0.5]) {
+    blob = await new Promise((r) => canvas.toBlob(r, 'image/jpeg', q));
+    if (!blob) break;
+    if (blob.size <= TARGET_BYTES) break;
+  }
+  if (!blob || blob.size >= file.size) return file;
+
+  const base = file.name.replace(/\.[^.]+$/, '');
+  return new File([blob], `${base}.jpg`, { type: 'image/jpeg' });
+}
+
 function VoiceSlider() {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -139,15 +172,25 @@ function UploadForm() {
   const [files, setFiles] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [sending, setSending] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [err, setErr] = useState('');
   const inputRef = useRef(null);
 
-  function addFiles(list) {
-    const next = [...files, ...Array.from(list)].slice(0, 3);
-    setFiles(next);
-    setPreviews(next.map((f) => URL.createObjectURL(f)));
+  async function addFiles(list) {
     setErr('');
+    setBusy(true);
+    try {
+      const incoming = Array.from(list).slice(0, 3 - files.length);
+      const shrunk = await Promise.all(incoming.map(compressImage));
+      const next = [...files, ...shrunk].slice(0, 3);
+      setFiles(next);
+      setPreviews(next.map((f) => URL.createObjectURL(f)));
+    } catch {
+      setErr('사진을 불러오지 못했어요. 다시 선택해 주세요.');
+    } finally {
+      setBusy(false);
+    }
   }
   function removeFile(i) {
     const next = files.filter((_, j) => j !== i);
@@ -166,9 +209,23 @@ function UploadForm() {
     fd.delete('photos');
     files.forEach((f) => fd.append('photos', f));
 
+    const total = files.reduce((n, f) => n + f.size, 0);
+    if (total > 4 * 1024 * 1024) {
+      setErr('사진 용량이 커서 한 번에 보낼 수 없어요. 장수를 줄여서 나눠 제출해 주세요.');
+      return;
+    }
+
     setSending(true);
     try {
       const res = await fetch('/api/submit', { method: 'POST', body: fd });
+      const type = res.headers.get('content-type') || '';
+      if (!type.includes('application/json')) {
+        throw new Error(
+          res.status === 413
+            ? '사진 용량이 너무 커요. 장수를 줄여서 다시 시도해 주세요.'
+            : '서버 응답을 받지 못했어요. 잠시 후 다시 시도해 주세요.'
+        );
+      }
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || '제출에 실패했어요.');
       setDone(true);
@@ -227,8 +284,8 @@ function UploadForm() {
           onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
         >
           <div className="icon" aria-hidden="true">📷</div>
-          <b>사진 선택하기</b>
-          <span>판넬을 든 인증사진 · 1장당 10MB 이하</span>
+          <b>{busy ? '사진 준비 중…' : '사진 선택하기'}</b>
+          <span>판넬을 든 인증사진 · 업로드 전 자동으로 용량을 줄입니다</span>
         </div>
         <input
           ref={inputRef}
@@ -260,8 +317,8 @@ function UploadForm() {
         </span>
       </label>
 
-      <button className="btn btn-primary" style={{ width: '100%' }} disabled={sending}>
-        {sending ? '제출 중…' : '인증사진 제출하기'}
+      <button className="btn btn-primary" style={{ width: '100%' }} disabled={sending || busy}>
+        {sending ? '제출 중…' : busy ? '사진 준비 중…' : '인증사진 제출하기'}
       </button>
       {err && <p className="form-msg err">{err}</p>}
     </form>

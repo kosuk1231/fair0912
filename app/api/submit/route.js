@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 
 const MAX_FILES = 3;
-const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_SIZE = 4 * 1024 * 1024; // 4MB (Vercel 요청 본문 상한 4.5MB 고려)
 
 function kstNow() {
   return new Intl.DateTimeFormat('ko-KR', {
@@ -40,7 +40,7 @@ export async function POST(req) {
     }
     for (const f of files) {
       if (f.size > MAX_SIZE) {
-        return NextResponse.json({ ok: false, error: '사진 1장의 용량은 10MB 이하로 올려 주세요.' }, { status: 400 });
+        return NextResponse.json({ ok: false, error: '사진 용량이 너무 커요. 다시 선택해 주세요.' }, { status: 400 });
       }
       if (!f.type.startsWith('image/')) {
         return NextResponse.json({ ok: false, error: '이미지 파일만 업로드할 수 있어요.' }, { status: 400 });

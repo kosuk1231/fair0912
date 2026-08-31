@@ -26,6 +26,25 @@ Vercel (Next.js /api/submit)
 3. **Storage → New bucket** → 이름 `issueon-photos`, **Public bucket 체크**
 4. **Settings → API**에서 `Project URL`, `service_role` 키 복사
 
+## 환경변수 (Vercel)
+
+| Key | Type | 값 |
+|---|---|---|
+| `SUPABASE_URL` | Config | `https://xxxx.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Secret** | service_role 키 |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Config | `kosuk1231@clim-503123.iam.gserviceaccount.com` |
+| `GOOGLE_PRIVATE_KEY` | **Secret** | `-----BEGIN PRIVATE KEY-----\n…` |
+| `SHEET_ID` | Config | 생략 가능 (코드 기본값 있음) |
+| `SHEET_TAB` | Config | 생략 가능 |
+| `DRIVE_FOLDER_ID` | Config | 생략 가능 |
+
+> ⚠️ **`NEXT_PUBLIC_` 접두사를 붙이지 마세요.** 붙이면 값이 브라우저 번들에 그대로
+> 노출되고, Vercel도 Secret으로 저장하지 못하게 막습니다. 이 프로젝트는 Supabase를
+> 서버(API 라우트)에서만 호출하므로 접두사가 필요 없습니다.
+
+> Environments는 **Production · Preview · Development 세 개 모두** 체크하세요.
+> Production만 체크하면 미리보기 배포에서 제출이 실패합니다.
+
 ## 2. 구글 설정
 
 연결 대상은 코드에 기본값으로 들어가 있습니다.
