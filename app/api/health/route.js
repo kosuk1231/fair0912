@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { appendToSheet, uploadToDrive } from '@/lib/google';
+import { appendToSheet, uploadToDrive, normalizePrivateKey } from '@/lib/google';
 
 export const runtime = 'nodejs';
 export const revalidate = 0;
@@ -12,9 +12,24 @@ export async function GET() {
   checks.env = {
     SUPABASE_URL: !!(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
     SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    GOOGLE_SERVICE_ACCOUNT_EMAIL: !!process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    GOOGLE_SERVICE_ACCOUNT_EMAIL: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || false,
     GOOGLE_PRIVATE_KEY: !!process.env.GOOGLE_PRIVATE_KEY,
   };
+
+  // 키 자체는 노출하지 않고 형태만 진단
+  {
+    const raw = process.env.GOOGLE_PRIVATE_KEY || '';
+    const fixed = normalizePrivateKey(raw);
+    checks.privateKeyShape = {
+      원본길이: raw.length,
+      따옴표포함: raw.trim().startsWith('"') || raw.trim().startsWith("'"),
+      실제줄바꿈: (raw.match(/\n/g) || []).length,
+      이스케이프줄바꿈: (raw.match(/\\n/g) || []).length,
+      BEGIN포함: raw.includes('BEGIN PRIVATE KEY'),
+      정규화후줄수: fixed ? fixed.trim().split('\n').length : 0,
+      정규화성공: !!fixed && fixed.includes('BEGIN PRIVATE KEY'),
+    };
+  }
 
   try {
     const sb = supabaseAdmin();
