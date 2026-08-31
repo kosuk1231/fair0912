@@ -228,6 +228,7 @@ function UploadForm() {
       }
       const json = await res.json();
       if (!json.ok) throw new Error(json.error || '제출에 실패했어요.');
+      if (json.driveError) console.warn('[drive]', json.driveError);
       setDone(true);
     } catch (e2) {
       setErr(e2.message);

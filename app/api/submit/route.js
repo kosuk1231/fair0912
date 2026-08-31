@@ -16,8 +16,15 @@ function kstNow() {
   }).format(new Date());
 }
 
+/** 드라이브 파일명용 — 한글 허용 */
 function safeName(s) {
   return (s || '').replace(/[^\uAC00-\uD7A3a-zA-Z0-9._-]/g, '_').slice(0, 40);
+}
+
+/** Supabase Storage 키용 — 한글·공백 불가(Invalid key), ASCII만 남긴다 */
+function asciiKey(s) {
+  const out = (s || '').replace(/[^a-zA-Z0-9._-]/g, '');
+  return out.slice(0, 24) || 'x';
 }
 
 export async function POST(req) {
@@ -55,6 +62,7 @@ export async function POST(req) {
     const photoUrls = [];   // 갤러리 표시용
     const driveLinks = [];  // 시트 기록용
     let driveFailed = 0;
+    let driveError = null;
 
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
@@ -71,10 +79,11 @@ export async function POST(req) {
       } catch (e) {
         console.error('[drive]', e.message);
         driveFailed++;
+        driveError = e.message;
       }
 
       // ② 드라이브 실패 시에만 Supabase Storage로 대피 (사진 유실 방지)
-      const path = `${stamp}_${safeName(name)}_${i + 1}.${ext}`;
+      const path = `${stamp}_${asciiKey(name)}_${i + 1}.${asciiKey(ext) || 'jpg'}`;
       const { error: upErr } = await sb.storage
         .from('issueon-photos')
         .upload(path, buffer, { contentType: f.type, upsert: false });
@@ -101,7 +110,7 @@ export async function POST(req) {
       console.error('[sheet]', e.message);
     }
 
-    return NextResponse.json({ ok: true, driveFailed });
+    return NextResponse.json({ ok: true, driveFailed, driveError });
   } catch (e) {
     console.error('[submit]', e);
     const m = e.message || '';
