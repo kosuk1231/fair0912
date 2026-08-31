@@ -140,6 +140,26 @@ section { padding: 52px 0; }
 .how li p { margin-top: 3px; font-size: 14.5px; color: #52707c; }
 
 /* 9개 메시지 — 슬라이드 */
+/* 1차 캠페인 성과 */
+.prior {
+  margin-top: 22px; padding: 18px 18px 16px;
+  border: 1.5px solid var(--line); border-left: 5px solid var(--teal);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: #fff;
+}
+.prior-label { font-size: 13px; font-weight: 700; color: #7b93a0; }
+.prior-mosaic { display: block; width: 100%; height: auto; margin-top: 10px; }
+.prior-nums {
+  margin-top: 14px; display: flex; align-items: center; gap: 14px;
+  font-size: 14px; color: #52707c;
+}
+.prior-nums b {
+  font-size: 26px; font-weight: 900; color: var(--orange);
+  letter-spacing: -0.03em; margin-right: 3px;
+}
+.prior-nums i { width: 1px; height: 22px; background: var(--line); }
+.prior-date { margin-top: 8px; font-size: 12.5px; color: #9db2bf; }
+
 .voice-block {
   margin-top: 30px; padding: 22px 18px 20px;
   background: var(--teal-tint); border-radius: var(--radius);

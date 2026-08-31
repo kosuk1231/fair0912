@@ -316,7 +316,7 @@ function UploadForm() {
         <label className="agree">
           <input type="checkbox" required />
           <span>
-            <b>[필수] 개인정보 수집·이용에 동의합니다.</b>
+            <b>[필수] 개인정보 수집·이용 및 사진 활용에 동의합니다.</b>
             <button
               type="button"
               className="consent-toggle"
@@ -329,18 +329,14 @@ function UploadForm() {
         {showPrivacy && (
           <div className="consent-detail">
             <p><b>수집 항목</b> 성함, 소속, 연락처(선택), SNS 게시물 링크(선택), 제출 사진</p>
-            <p><b>수집 목적</b> 캠페인 참여 확인, 이벤트 안내, 협회 홍보(SNS·홈페이지), 처우개선 정책활동 자료</p>
+            <p>
+              <b>이용 목적</b> 캠페인 참여 확인 및 이벤트 안내, 제출 사진·성함·소속의 캠페인
+              홍보 활용(협회 SNS·홈페이지·정책자료)
+            </p>
             <p><b>보유 기간</b> 수집일로부터 1년 (이후 지체 없이 파기)</p>
             <p>동의를 거부할 수 있으나, 거부 시 캠페인 참여(사진 제출)가 제한됩니다.</p>
           </div>
         )}
-        <label className="agree">
-          <input type="checkbox" required />
-          <span>
-            [필수] 제출한 사진과 성함·소속이 캠페인 홍보(협회 SNS·홈페이지·정책자료)에 활용되는 것에
-            동의합니다.
-          </span>
-        </label>
       </div>
 
       <button className="btn btn-primary" style={{ width: '100%' }} disabled={sending || busy}>
@@ -376,6 +372,22 @@ export default function Page() {
             공정위원회 현안대응 캠페인. 판넬을 들고, 찍고, 올리는 것만으로{' '}
             <strong>조례시설 종사자 처우개선</strong>에 힘이 보태집니다.
           </p>
+
+          <div className="prior">
+            <p className="prior-label">지난 5월, 이렇게 모였습니다</p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="prior-mosaic"
+              src="/mosaic.jpg"
+              alt="1차 캠페인 참여자 인증사진으로 만든 문구 — 동일한 복지업무, 동일한 처우개선, 동일한 경력인정"
+            />
+            <div className="prior-nums">
+              <span><b>292</b>장의 인증샷</span>
+              <i aria-hidden="true" />
+              <span><b>751</b>명의 참여</span>
+            </div>
+            <p className="prior-date">2026. 5. 21. ~ 6. 2. 1차 캠페인</p>
+          </div>
           <div className="voice-block">
             <h2 className="voice-heading">
               아홉 가지 목소리, <span className="t">하나의 방향</span>
@@ -472,8 +484,6 @@ export default function Page() {
           <b>서울특별시사회복지사협회 공정위원회</b>
           <br />
           2026 서울사회복지사 등반대회 · 현안대응 캠페인 ‘이슈온’
-          <br />
-          문의: 회원조직팀 02-786-2962
           <div className="tags">#서울복지 #공정위원회 #동일업무동일처우</div>
         </div>
       </footer>
