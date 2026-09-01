@@ -168,9 +168,14 @@ export default function Admin() {
                     그 외 {sigs.otherTotal.toLocaleString()}명). 자치구별 집계는 시의회 지역구 설득
                     자료로 바로 쓸 수 있습니다.
                   </p>
-                  <button type="button" className="btn btn-primary" style={{ marginTop: 14 }} onClick={exportCsv}>
-                    서명부 내려받기 (CSV)
-                  </button>
+                  <div style={{ marginTop: 14, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <button type="button" className="btn btn-primary" onClick={exportCsv}>
+                      CSV 내려받기
+                    </button>
+                    <a className="btn btn-ghost" href="/admin/print">
+                      인쇄용 서명부 (자필 서명 포함)
+                    </a>
+                  </div>
 
                   <h3 className="tally-head">
                     서울특별시 <span>{sigs.seoulTotal.toLocaleString()}명</span>
