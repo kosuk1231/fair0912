@@ -424,18 +424,18 @@ export default function Page() {
             대우가 달라져서는 안 됩니다.
           </p>
           <div className="stats">
-            <div className="stat"><b>13개</b><span>직능 분야</span></div>
-            <div className="stat"><b>155개</b><span>조례시설</span></div>
-            <div className="stat"><b>2,365명</b><span>종사자</span></div>
+            <div className="stat"><b>14개</b><span>직능 분야</span></div>
+            <div className="stat"><b>160개</b><span>조례시설</span></div>
+            <div className="stat"><b>2,440명</b><span>종사자</span></div>
           </div>
           <div className="facilities">
-            <p className="fac-label">서울시 조례로 운영되는 13개 직능의 시설들입니다.</p>
+            <p className="fac-label">서울시 조례로 운영되는 14개 직능의 시설들입니다.</p>
             <ul>
               {[
-                '1인가구지원센터', '50플러스센터', '교육복지센터', '뇌병변비전센터',
-                '노숙인지원주택', '발달장애인사회적응지원센터', '발달장애인평생교육센터',
+                '1인가구지원센터', '50플러스센터', '교육복지센터', '노숙인지원주택',
+                '뇌병변비전센터', '발달장애인사회적응지원센터', '발달장애인평생교육센터',
                 '시립실버케어센터', '외국인주민센터', '장애인가족지원센터',
-                '장애인권익옹호기관', '장애인지원주택', '주거복지센터',
+                '장애인권익옹호기관', '장애인지원주택', '주거복지센터', '통합돌봄센터',
               ].map((f) => (
                 <li key={f}>{f}</li>
               ))}
