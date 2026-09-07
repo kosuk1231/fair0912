@@ -121,7 +121,12 @@ section { padding: 52px 0; }
 .facilities li {
   font-size: 13px; font-weight: 700; color: #d7e6e4;
   border: 1px solid rgba(255,255,255,0.22); border-radius: 999px;
-  padding: 5px 12px; background: rgba(255,255,255,0.05);
+  padding: 5px 8px 5px 12px; background: rgba(255,255,255,0.05);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+.facilities li i {
+  font-style: normal; font-size: 11.5px; font-weight: 700; color: #16324a;
+  background: #7fd4cf; border-radius: 999px; padding: 2px 8px;
 }
 
 /* 참여 방법 */
